@@ -1,0 +1,4 @@
+{
+    "nrf-connect.applications": [],
+    "nrf-connect.topdir": "${nrf-connect.sdk:2.5.0}"
+}
