@@ -1,6 +1,7 @@
 {
     "nrf-connect.applications": [
-        "${workspaceFolder}\\test"
+        "${workspaceFolder}\\test",
+        "${workspaceFolder}\\bluetooth_test"
     ],
     "nrf-connect.topdir": "${nrf-connect.sdk:2.5.0}"
 }

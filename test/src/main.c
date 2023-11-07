@@ -15,8 +15,6 @@
 #include "adc.h"
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
-
-
 #include <zephyr/bluetooth/bluetooth.h>
 #include <zephyr/bluetooth/hci.h>
 #include <zephyr/bluetooth/conn.h>
@@ -40,15 +38,6 @@
 #define USER_BUTTON_4           DK_BTN4_MSK
 
 LOG_MODULE_REGISTER(MAIN, LOG_LEVEL_INF);
-
-static const struct bt_data ad[] = {
-	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
-	BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
-};
-
-static const struct bt_data sd[] = {
-	BT_DATA_BYTES(BT_DATA_UUID128_ALL, BT_UUID_LBS_VAL),
-};
 
 static void button_changed(uint32_t button_state, uint32_t has_changed)
 {
@@ -98,6 +87,13 @@ void main(void)
 	return;
 	}
 
+	printk("Starting Bluetooth Peripheral LBS example\n");
+	printk("Starting Bluetooth Peripheral LBS example\n");
+	printk("Starting Bluetooth Peripheral LBS example\n");
+	printk("Starting Bluetooth Peripheral LBS example\n");
+	printk("Starting Bluetooth Peripheral LBS example\n");
+	printk("Starting Bluetooth Peripheral LBS example\n");
+
 	while (1) 
 	{
 		struct Measurement m = readADCValue();
@@ -120,5 +116,3 @@ void main(void)
 
 	}
 }
-
-
