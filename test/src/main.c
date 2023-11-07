@@ -16,6 +16,8 @@
 #include <zephyr/devicetree.h>
 
 
+#define DEVICE_NAME CONFIG_BT_DEVICE_NAME
+#define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1)
 
 #define USER_LED1         	 	DK_LED1
 #define USER_LED2          		DK_LED2
