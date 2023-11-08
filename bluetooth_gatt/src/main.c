@@ -31,6 +31,7 @@ LOG_MODULE_REGISTER(Lesson4_Exercise2, LOG_LEVEL_INF);
 #define USER_LED DK_LED3
 #define USER_BUTTON DK_BTN1_MSK
 
+
 #define STACKSIZE 1024
 #define PRIORITY 7
 
@@ -196,18 +197,9 @@ void main(void)
 		printk("x = %d,  y = %d,  z = %d\n",m.x,m.y,m.z);
 		
 		k_sleep(K_MSEC(1000));
-		
-		dk_set_led_on(USER_LED1);
-		dk_set_led_on(USER_LED2);
-		dk_set_led_on(USER_LED3);
-		dk_set_led_on(USER_LED4);
-		 
+			 
 		k_sleep(K_MSEC(1000));
 		
-		dk_set_led_off(USER_LED1);
-		dk_set_led_off(USER_LED2);
-		dk_set_led_off(USER_LED3);
-		dk_set_led_off(USER_LED4);
 	}
 }
 /* STEP 18.2 - Define and initialize a thread to send data periodically */
