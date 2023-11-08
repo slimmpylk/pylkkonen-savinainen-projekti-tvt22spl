@@ -31,7 +31,6 @@ LOG_MODULE_REGISTER(Lesson4_Exercise2, LOG_LEVEL_INF);
 #define USER_LED DK_LED3
 #define USER_BUTTON DK_BTN1_MSK
 
-
 #define STACKSIZE 1024
 #define PRIORITY 7
 
@@ -175,31 +174,6 @@ void main(void)
 	for (;;) {
 		dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
 		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
-	}
-
-		
-	if(initializeADC() != 0)
-	{
-	printk("ADC initialization failed!");
-	return;
-	}
-
-	printk("Starting Bluetooth Peripheral LBS example\n");
-	printk("Starting Bluetooth Peripheral LBS example\n");
-	printk("Starting Bluetooth Peripheral LBS example\n");
-	printk("Starting Bluetooth Peripheral LBS example\n");
-	printk("Starting Bluetooth Peripheral LBS example\n");
-	printk("Starting Bluetooth Peripheral LBS example\n");
-
-	while (1) 
-	{
-		struct Measurement m = readADCValue();
-		printk("x = %d,  y = %d,  z = %d\n",m.x,m.y,m.z);
-		
-		k_sleep(K_MSEC(1000));
-			 
-		k_sleep(K_MSEC(1000));
-		
 	}
 }
 /* STEP 18.2 - Define and initialize a thread to send data periodically */
