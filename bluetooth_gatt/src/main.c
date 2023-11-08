@@ -12,14 +12,15 @@
 #include <zephyr/bluetooth/conn.h>
 #include <dk_buttons_and_leds.h>
 #include "my_lbs.h"
+#include <zephyr/sys/printk.h>
 #include "adc.h"
 
 static struct bt_le_adv_param *adv_param = BT_LE_ADV_PARAM(
 	(BT_LE_ADV_OPT_CONNECTABLE |
 	 BT_LE_ADV_OPT_USE_IDENTITY), /* Connectable advertising and use identity address */
-	800, /* Min Advertising Interval 500ms (800*0.625ms) */
-	801, /* Max Advertising Interval 500.625ms (801*0.625ms) */
-	NULL); /* Set to NULL for undirected advertising */
+	800,						  /* Min Advertising Interval 500ms (800*0.625ms) */
+	801,						  /* Max Advertising Interval 500.625ms (801*0.625ms) */
+	NULL);						  /* Set to NULL for undirected advertising */
 
 LOG_MODULE_REGISTER(Lesson4_Exercise2, LOG_LEVEL_INF);
 
@@ -55,7 +56,8 @@ static const struct bt_data sd[] = {
 static void simulate_data(void)
 {
 	app_sensor_value++;
-	if (app_sensor_value == 200) {
+	if (app_sensor_value == 200)
+	{
 		app_sensor_value = 100;
 	}
 }
@@ -72,7 +74,8 @@ static bool app_button_cb(void)
 /* STEP 18.1 - Define the thread function  */
 void send_data_thread(void)
 {
-	while (1) {
+	while (1)
+	{
 		/* Simulate data */
 		simulate_data();
 		/* Send notification, the function sends notifications only if a client is subscribed */
@@ -89,7 +92,8 @@ static struct my_lbs_cb app_callbacks = {
 
 static void button_changed(uint32_t button_state, uint32_t has_changed)
 {
-	if (has_changed & USER_BUTTON) {
+	if (has_changed & USER_BUTTON)
+	{
 		uint32_t user_button_state = button_state & USER_BUTTON;
 		/* STEP 6 - Send indication on a button press */
 		my_lbs_send_button_state_indicate(user_button_state);
@@ -98,7 +102,8 @@ static void button_changed(uint32_t button_state, uint32_t has_changed)
 }
 static void on_connected(struct bt_conn *conn, uint8_t err)
 {
-	if (err) {
+	if (err)
+	{
 		printk("Connection failed (err %u)\n", err);
 		return;
 	}
@@ -125,7 +130,8 @@ static int init_button(void)
 	int err;
 
 	err = dk_buttons_init(button_changed);
-	if (err) {
+	if (err)
+	{
 		printk("Cannot init buttons (err: %d)\n", err);
 	}
 
@@ -140,40 +146,56 @@ void main(void)
 	LOG_INF("Starting Lesson 4 - Exercise 2 \n");
 
 	err = dk_leds_init();
-	if (err) {
+	if (err)
+	{
 		LOG_ERR("LEDs init failed (err %d)\n", err);
 		return;
 	}
 
 	err = init_button();
-	if (err) {
+	if (err)
+	{
 		printk("Button init failed (err %d)\n", err);
 		return;
 	}
 
 	err = bt_enable(NULL);
-	if (err) {
+	if (err)
+	{
 		LOG_ERR("Bluetooth init failed (err %d)\n", err);
 		return;
 	}
 	bt_conn_cb_register(&connection_callbacks);
 
 	err = my_lbs_init(&app_callbacks);
-	if (err) {
+	if (err)
+	{
 		printk("Failed to init LBS (err:%d)\n", err);
 		return;
 	}
 	LOG_INF("Bluetooth initialized\n");
 	err = bt_le_adv_start(adv_param, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
-	if (err) {
+	if (err)
+	{
 		LOG_ERR("Advertising failed to start (err %d)\n", err);
 		return;
 	}
 
 	LOG_INF("Advertising successfully started\n");
-	for (;;) {
+	for (;;)
+	{
 		dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
 		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
+	}
+
+	while (1)
+	{
+		struct Measurement m = readADCValue();
+		printk("x = %d,  y = %d,  z = %d\n", m.x, m.y, m.z);
+
+		k_sleep(K_MSEC(1000));
+
+
 	}
 }
 /* STEP 18.2 - Define and initialize a thread to send data periodically */
