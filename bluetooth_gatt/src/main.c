@@ -60,12 +60,25 @@ static const struct bt_data sd[] = {
 /* STEP 16 - Define a function to simulate the data */
 static void simulate_data(void)
 {
-	app_sensor_value++;
-	if (app_sensor_value == 200)
-	{
-		app_sensor_value = 100;
-	}
+    if (initializeADC() != 0)
+    {
+        printk("ADC initialization failed!");
+        return;
+    }
+
+    struct Measurement m = readADCValue();
+
+    LOG_DBG("x = %d,  y = %d,  z = %d\n", m.x, m.y, m.z);
+
+    // Deconstruct the struct and send the values one at a time
+    // Assuming app_sensor_value is a global variable that is used elsewhere
+    int *sensor_values[] = { &m.x, &m.y, &m.z };
+    for (int i = 0; i < sizeof(sensor_values)/sizeof(sensor_values[0]); i++)
+    {
+        app_sensor_value = *sensor_values[i];
+    }
 }
+
 static void app_led_cb(bool led_state)
 {
 	dk_set_led(USER_LED, led_state);
