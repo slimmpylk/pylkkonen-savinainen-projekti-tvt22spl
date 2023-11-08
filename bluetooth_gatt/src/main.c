@@ -199,7 +199,7 @@ void main(void)
 		}
 
 		struct Measurement m = readADCValue();
-		printk("x = %d,  y = %d,  z = %d\n", m.x, m.y, m.z);
+		LOG_INF("x = %d,  y = %d,  z = %d\n", m.x, m.y, m.z);
 
 		k_sleep(K_MSEC(1000));
 	}
