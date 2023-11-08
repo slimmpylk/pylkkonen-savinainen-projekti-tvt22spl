@@ -10,6 +10,11 @@
 #include <zephyr/bluetooth/gap.h>
 #include <zephyr/bluetooth/uuid.h>
 #include <zephyr/bluetooth/conn.h>
+#include <inttypes.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <zephyr/sys/printk.h>
+#include <zephyr/sys/util.h>
 #include <dk_buttons_and_leds.h>
 #include "my_lbs.h"
 #include <zephyr/sys/printk.h>
@@ -186,16 +191,17 @@ void main(void)
 	{
 		dk_set_led(RUN_STATUS_LED, (++blink_status) % 2);
 		k_sleep(K_MSEC(RUN_LED_BLINK_INTERVAL));
-	}
 
-	while (1)
-	{
+		if (initializeADC() != 0)
+		{
+			printk("ADC initialization failed!");
+			return;
+		}
+
 		struct Measurement m = readADCValue();
 		printk("x = %d,  y = %d,  z = %d\n", m.x, m.y, m.z);
 
 		k_sleep(K_MSEC(1000));
-
-
 	}
 }
 /* STEP 18.2 - Define and initialize a thread to send data periodically */
