@@ -1,2 +1,3 @@
-bluetooth_test\build
-test\build
+/bluetooth_test/build/
+/bluetooth_gatt/build/
+/test/build/

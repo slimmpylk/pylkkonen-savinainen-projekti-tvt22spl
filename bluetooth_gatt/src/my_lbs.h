@@ -69,41 +69,23 @@ struct my_lbs_cb {
  */
 int my_lbs_init(struct my_lbs_cb *callbacks);
 
-/** @brief Send the button state as indication.
+/** @brief Send the "hey there" string as indication.
  *
- * This function sends a binary state, typically the state of a
- * button, to all connected peers.
- *
- * @param[in] button_state The state of the button.
+ * This function sends the "hey there" string to all connected peers.
  *
  * @retval 0 If the operation was successful.
  *           Otherwise, a (negative) error code is returned.
  */
-int my_lbs_send_button_state_indicate(bool button_state);
+int my_lbs_send_hey_there_indicate(void);
 
-/** @brief Send the button state as notification.
+/** @brief Send the "hey there" string as notification.
  *
- * This function sends a binary state, typically the state of a
- * button, to all connected peers.
- *
- * @param[in] button_state The state of the button.
+ * This function sends the "hey there" string to all connected peers.
  *
  * @retval 0 If the operation was successful.
  *           Otherwise, a (negative) error code is returned.
  */
-int my_lbs_send_button_state_notify(bool button_state);
-
-/** @brief Send the sensor value as notification.
- *
- * This function sends an uint32_t  value, typically the value
- * of a simulated sensor to all connected peers.
- *
- * @param[in] sensor_value The value of the simulated sensor.
- *
- * @retval 0 If the operation was successful.
- *           Otherwise, a (negative) error code is returned.
- */
-int my_lbs_send_sensor_notify(uint32_t sensor_value);
+int my_lbs_send_hey_there_notify(void);
 
 #ifdef __cplusplus
 }
@@ -113,4 +95,4 @@ int my_lbs_send_sensor_notify(uint32_t sensor_value);
  * @}
  */
 
-#endif /* BT_LBS_H_ */
+#endif
