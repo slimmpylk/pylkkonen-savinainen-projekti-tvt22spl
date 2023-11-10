@@ -67,12 +67,20 @@ static void simulate_data(void)
     }
 
     struct Measurement m = readADCValue();
+	bool val = gpio_pin_get_dt(&button)
+	if (val) {
+		if(suunta<5){
+			suunta++;
+		}
+		else{
+			suunta=1;
+		}
 
     LOG_DBG("x = %d,  y = %d,  z = %d\n", m.x, m.y, m.z);
 
     // Deconstruct the struct and send the values one at a time
     // Assuming app_sensor_value is a global variable that is used elsewhere
-    int *sensor_values[] = { &m.x, &m.y, &m.z };
+    int *sensor_values[] = { &m.x, &m.y, &m.z, &suunta};
     for (int i = 0; i < sizeof(sensor_values)/sizeof(sensor_values[0]); i++)
     {
         app_sensor_value = *sensor_values[i];
