@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/sys/util.h>
+#include <zephyr/drivers/gpio.h>
 #include <dk_buttons_and_leds.h>
 #include "my_lbs.h"
 #include <zephyr/sys/printk.h>
@@ -44,8 +45,9 @@ LOG_MODULE_REGISTER(Lesson4_Exercise2, LOG_LEVEL_INF);
 /* STEP 17 - Define the interval at which you want to send data at */
 #define NOTIFY_INTERVAL 500
 static bool app_button_state;
+static int suunta = 0;
 /* STEP 15 - Define the data you want to stream over Bluetooth LE */
-static uint32_t app_sensor_value = 100;
+static uint32_t app_sensor_value = 0;
 
 static const struct bt_data ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
@@ -57,6 +59,8 @@ static const struct bt_data sd[] = {
 	BT_DATA_BYTES(BT_DATA_UUID128_ALL, BT_UUID_LBS_VAL),
 };
 
+static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET(DT_NODELABEL(button0), gpios);
+
 /* STEP 16 - Define a function to simulate the data */
 static void simulate_data(void)
 {
@@ -66,25 +70,6 @@ static void simulate_data(void)
         return;
     }
 
-    struct Measurement m = readADCValue();
-	bool val = gpio_pin_get_dt(&button)
-	if (val) {
-		if(suunta<5){
-			suunta++;
-		}
-		else{
-			suunta=1;
-		}
-
-    LOG_DBG("x = %d,  y = %d,  z = %d\n", m.x, m.y, m.z);
-
-    // Deconstruct the struct and send the values one at a time
-    // Assuming app_sensor_value is a global variable that is used elsewhere
-    int *sensor_values[] = { &m.x, &m.y, &m.z, &suunta};
-    for (int i = 0; i < sizeof(sensor_values)/sizeof(sensor_values[0]); i++)
-    {
-        app_sensor_value = *sensor_values[i];
-    }
 }
 
 static void app_led_cb(bool led_state)
@@ -97,18 +82,54 @@ static bool app_button_cb(void)
 	return app_button_state;
 }
 
-/* STEP 18.1 - Define the thread function  */
+/* STEP 18.1 - Define the thread function */
 void send_data_thread(void)
 {
-	while (1)
-	{
-		/* Simulate data */
-		simulate_data();
-		/* Send notification, the function sends notifications only if a client is subscribed */
-		my_lbs_send_sensor_notify(app_sensor_value);
+    while (1)
+    {
+        struct Measurement m = readADCValue();
+        int val = gpio_pin_get_dt(&button); // Getting the state of the button
+        if (val < 0) {
+            printk("Error reading button state: %d\n", val);
+            // Handle error or continue
+        }
 
-		k_sleep(K_MSEC(NOTIFY_INTERVAL));
-	}
+        if (val > 0) { // If button is pressed (assuming high state is 'pressed')
+            if (suunta < 5) {
+                suunta++;
+            } else {
+                suunta = 1;
+            }
+        }
+
+        LOG_DBG("x = %d,  y = %d,  z = %d\n", m.x, m.y, m.z);
+
+        // Deconstruct the struct and send the values one at a time
+        for (int i = 0; i < 4; i++) {
+            if (i == 0) {
+                app_sensor_value = m.x;
+                my_lbs_send_sensor_notify(app_sensor_value);
+                printk("x = %d\n", m.x);
+            }
+            else if (i == 1) {
+                app_sensor_value = m.y;
+                my_lbs_send_sensor_notify(app_sensor_value);
+                printk("y = %d\n", m.y);
+            }
+            else if (i == 2) {
+                app_sensor_value = m.z;
+                my_lbs_send_sensor_notify(app_sensor_value);
+                printk("z = %d\n", m.z);
+            }
+            else if (i == 3) {
+                app_sensor_value = suunta;
+                my_lbs_send_sensor_notify(app_sensor_value);
+                printk("suunta = %d\n", suunta);
+            }
+        }
+
+        k_sleep(K_MSEC(NOTIFY_INTERVAL));
+    }
 }
 
 static struct my_lbs_cb app_callbacks = {
@@ -153,13 +174,19 @@ struct bt_conn_cb connection_callbacks = {
 
 static int init_button(void)
 {
-	int err;
+    int err;
 
-	err = dk_buttons_init(button_changed);
-	if (err)
-	{
-		printk("Cannot init buttons (err: %d)\n", err);
-	}
+    if (!device_is_ready(button.port)) {
+        printk("Error: button device %s is not ready\n", button.port->name);
+        return -ENODEV;
+    }
+
+    err = gpio_pin_configure_dt(&button, GPIO_INPUT);
+    if (err) {
+        printk("Error %d: failed to configure %s pin %d\n", 
+               err, button.port->name, button.pin);
+        return err;
+    }
 
 	return err;
 }
