@@ -90,14 +90,17 @@ void send_data_thread(void)
         struct Measurement m = readADCValue();
         int val = gpio_pin_get_dt(&button); // Getting the state of the button
         if (val < 0) {
+			printk("suunta = %d\n", suunta);
             printk("Error reading button state: %d\n", val);
             // Handle error or continue
         }
 
         if (val > 0) { // If button is pressed (assuming high state is 'pressed')
             if (suunta < 5) {
+				printk("suunta = %d\n", suunta);
                 suunta++;
             } else {
+				printk("suunta = %d\n", suunta);
                 suunta = 1;
             }
         }
