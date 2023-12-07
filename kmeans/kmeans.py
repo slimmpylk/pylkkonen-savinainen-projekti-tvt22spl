@@ -8,7 +8,7 @@ import json
 # 3.	Arvotaan 6 pistettä välille 1000-2000 ja funktio joka tulostaa nämä arvotut pisteet raakadatan päälle 3D kuvaan.
 # 4.	Aliohjelma jolla voi mitata kaksi 3D-avaruuden pisteen välinen etäisyys ja todistetaan aliohjelman toimivuus (tulostetaan lasku?)
 # 5.	Käy läpi kaikki tietokannasta luetut 3D avaruuden pisteet ja mittaa etäisyydet kaikkiin 6 satunnaiseen pisteeseen ja valitaan ”voittajaksi” (mitä meinaa?) se piste johon etäisyys on pienin.
-# 6.	Tehdään tietoraenne mihin tallennetaan kunkin keskipisteen voittajat. Suoritetaan kohta 4 uudelleen siten, että nyt voittajien data tallennetaan tuohon tietorakenteeseen
+# 6.	Tehdään tietoraenne mihin tallennetaan kunkin keskipisteen lahimmatDatapisteet. Suoritetaan kohta 4 uudelleen siten, että nyt voittajien data tallennetaan tuohon tietorakenteeseen
 # 7.	Lasketaan uudet keskipisteet edellisessä kohdassa kerätyn datan perusteella. Jos joku keskipiste ei voittanut yhtään 3D pistettä itselleen, niin sen uusi arvo määritellään arpomalla uusi alkuarvo.
 # 8.	Integroidaan kohdat kokonaisuudeksi joka toistetaan kunnes algoritmin antama tulos on riittävän tarkka (eli keskipiteet eivät enää liiku tai kokonaisuus toistetaan X kertaa)
 # 9.	Lopuksi tulostusfunktio jolla saadaan tulostettua algoritmin opettamat 6 kesipistettä c-kieliseen taulukkoon kmeans.h tiedostoon.
@@ -28,7 +28,7 @@ def convert_data_to_np_array(data):
 # Vaihe 3: Arvotaan 6 pistettä välille 1300-1800
 def arvo_satunnaispisteet(n, low, high):
     # Arvotaan 6 pistettä annetulla välillä
-    return np.random.uniform(low, high, (n, 3))
+    return np.random.uniform(low, high, (n, 3)) # taulukon alimmasta arvosta ylimpään range
 
 # Vaihe 4: Aliohjelma kahden 3D-avaruuden pisteen etäisyyden mittaamiseen
 def laske_3D_etaisyys(point1, point2):
@@ -36,88 +36,135 @@ def laske_3D_etaisyys(point1, point2):
     return np.sqrt(np.sum((point1 - point2) ** 2))
 
 # Vaihe 5: Etsitään lähin keskipiste jokaiselle datan pisteelle
-def lahimmat_keskipisteet(data, centers):
+def lahimmat_keskipisteet(data, centers): #<- huom centers keskipisteet tuodaan tänne
     # Etsitään lähin keskipiste jokaiselle datan pisteelle
-    assignments = []
-    for point in data:
-        distances = [laske_3D_etaisyys(point, center) for center in centers]
-        closest_center = np.argmin(distances)
-        assignments.append(closest_center)
-    return assignments
+    klusterisijoitukset = [] # lista, joka sisältää mihin keskipisteeseen kunkin datapisteen etäisyys on lyhin eli voittaja
+    for point in data: # point = x,y,z ym.
+        distances = [laske_3D_etaisyys(point, center) for center in centers] # laskee etäisyyden 3. vaiheen funktiota käyttäen
+        closest_center = np.argmin(distances) # etsii lähimmän klusterikeskuksen argmin eli pienin arvo funktiota käyttäen
+        klusterisijoitukset.append(closest_center) # lisää lähimmän klusterikeskuksen klusterisijoitukset-listaan
+    print(klusterisijoitukset)
+    return klusterisijoitukset
 
-# Vaihe 6: Tallennetaan keskipisteiden "voittajat"
-def uudet_keskipisteet(data, assignments, n_centers):
-    # Lasketaan uudet keskipisteet ja päivitetään keskipisteiden ryhmät
-    new_centers = []
+# Vaihe 6: Tallennetaan iteroidut keskipisteiden "lahimmatDatapisteet"
+def uudet_keskipisteet(data, klusterisijoitukset, n_centers):
+    lahimmatDatapisteet = np.zeros((n_centers, data.shape[1]))
+    klusterienMaara = np.zeros(n_centers, dtype=int)
+
+    # Lisätään datapisteet niiden klustereihin
+    for point, klusterisijoitus in zip(data, klusterisijoitukset):
+        lahimmatDatapisteet[klusterisijoitus] += point  # Lisää datapiste klusterin summaan (keskipisteiden summat)
+        klusterienMaara[klusterisijoitus] += 1  # Kasvata klusterin datapistemäärää
+
+    # Laske uudet keskipisteet
     for i in range(n_centers):
-        points = data[np.array(assignments) == i]
-        if len(points) > 0:
-            new_centers.append(np.mean(points, axis=0))
+        if klusterienMaara[i] > 0:
+            lahimmatDatapisteet[i] /= klusterienMaara[i]  # Päivitä keskipiste keskiarvona
         else:
-            new_centers.append(arvo_satunnaispisteet(1, 1300, 1800)[0]) # Huom: Alkuperäinen välillä 1500-1800, muutettu ohjeiden mukaisesti välille 1000-2000 t sauli
-    return new_centers
+            # Uusi keskipiste satunnaisesti, jos klusterissa ei ole datapisteitä
+            lahimmatDatapisteet[i] = arvo_satunnaispisteet(1, 1300, 1800)[0] # arpoo uuden pisteen jos jokin kuudesta pisteestä ei ole voittaja
+    
+    # ei siis käytetä kumulatiivista summaa
+    return lahimmatDatapisteet
 
-# Vaihe 7: Integroidaan kohdat kokonaisuudeksi
+
+# Vaihe 6: Tallennetaan keskipisteiden "lahimmatDatapisteet": uudet_keskipisteet-funktio suorittaa tämän vaiheen. Tässä funktiossa käydään läpi kaikki keskipisteet ja kerätään kunkin 
+# keskipisteen "lahimmatDatapisteet" eli niille lähimmät arvotut datapisteet klusterisijoitukset-listan perusteella. 
+# Sitten lasketaan kunkin keskipisteen voittamien pisteiden keskiarvo, joka määrittää uuden sijainnin 
+# kyseiselle keskipisteelle. Jos jokin keskipiste ei voita yhtään datapistettä, se korvataan uudella satunnaisesti arvotulla pisteellä.
+
+# Vaihe 7 & 8: Integroidaan kohdat kokonaisuudeksi
 def kmeans(data, n_centers, n_iterations):
     # Suoritetaan KMeans-algoritmi
-    centers = arvo_satunnaispisteet(n_centers, 1300, 1800) # Huom: Alkuperäinen välillä 1500-1800, muutettu ohjeiden mukaisesti välille 1000-2000 t sauli
+    centers = arvo_satunnaispisteet(n_centers, 1300, 1800) 
     for _ in range(n_iterations):
-        assignments = lahimmat_keskipisteet(data, centers)
-        centers = uudet_keskipisteet(data, assignments, n_centers)
-    return centers, assignments
+        klusterisijoitukset = lahimmat_keskipisteet(data, centers)
+        centers = uudet_keskipisteet(data, klusterisijoitukset, n_centers) #centers = treenatut keskipisteet
+    
+    return centers, klusterisijoitukset
 
+# Vaihe 7 & 8: Integroidaan kohdat kokonaisuudeksi
+# kmeans-funktio yhdistää edelliset vaiheet toistuvaksi prosessiksi. Aluksi se luo satunnaiset alkuarvot keskipisteille ja suorittaa sitten toistuvasti vaiheita 5 ja 6, 
+# päivittäen keskipisteet jokaisella iteraatiolla. Tämä toistetaan, kunnes algoritmi on suoritettu määritelty määrä iteraatioita (n_iterations). 
+# Tämä prosessi vastaa vaatimusta, että algoritmi toistetaan kunnes se on riittävän tarkka - tosin tässä toteutuksessa tarkkuutta ei arvioida muuten kuin iteraatioiden määrällä.
 
 # Vaihe 8: Visualisointi
 def visualisointi(data, centers):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    # Piirretään kaikki datapisteet
-    ax.scatter(data[:, 0], data[:, 1], data[:, 2], c='blue', marker='o')
+    # Piirrä kaikki datapisteet
+    data_points = ax.scatter(data[:, 0], data[:, 1], data[:, 2], c='blue', marker='o', label='Datapisteet')
 
-    # Piirretään KMeans-keskipisteet, käytetään eri väriä
+    # Piirrä KMeans-klusterikeskukset
     centers = np.array(centers)
-    ax.scatter(centers[:, 0], centers[:, 1], centers[:, 2], c='red', marker='x', s=100)
+    cluster_centers = ax.scatter(centers[:, 0], centers[:, 1], centers[:, 2], c='red', marker='x', s=100, label='Centroid keskipisteet')
 
-    ax.set_xlabel('Sensorvalue B')
-    ax.set_ylabel('Sensorvalue C')
-    ax.set_zlabel('Sensorvalue D')
+    # Lisää selite kuvaajaan
+    ax.legend()
+
+    ax.set_xlabel('Sensoriarvo B')
+    ax.set_ylabel('Sensoriarvo C')
+    ax.set_zlabel('Sensoriarvo D')
     plt.show()
-   
+
 # 9. Toinen visualisointi 
-def visualisointi2(data, centers, assignments):
+def visualisointi2(data, centers, klusterisijoitukset):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    # Piirretään datapisteet
+    # Piirrä kunkin klusterin datapisteet
     for i in range(len(centers)):
-        points = data[np.array(assignments) == i]
-        ax.scatter(points[:, 0], points[:, 1], points[:, 2])
+        points = data[np.array(klusterisijoitukset) == i]
+        ax.scatter(points[:, 0], points[:, 1], points[:, 2], label=f'Klusteri {i+1} Pisteet')
 
-    # Piirretään keskipisteet, käytetään eri väriä
+    # Piirrä klusterikeskukset
     centers = np.array(centers)
-    ax.scatter(centers[:, 0], centers[:, 1], centers[:, 2], c='red', marker='x', s=100)
+    cluster_centers = ax.scatter(centers[:, 0], centers[:, 1], centers[:, 2], c='red', marker='x', s=100, label='Centroid keskipisteet')
 
-    ax.set_xlabel('Sensorvalue B')
-    ax.set_ylabel('Sensorvalue C')
-    ax.set_zlabel('Sensorvalue D')
+    # Lisää selite kuvaajaan
+    ax.legend()
+
+    ax.set_xlabel('Sensoriarvo B')
+    ax.set_ylabel('Sensoriarvo C')
+    ax.set_zlabel('Sensoriarvo D')
     plt.show()
+
+
     
 # Pääohjelman suoritus
 file_name = 'updated_data.json'
 raw_data = load_data_from_json(file_name)
 data = convert_data_to_np_array(raw_data)
 
+# Tulosta alun datapisteet
+print("Alun datapisteet:")
+print(data[:5])  # Muuta 5 siihen, kuinka monta pistettä haluat tulostaa
+
+# Laske ja tulosta kumulatiiviset summat
+# cumulative_sums = np.cumsum(data, axis=0)
+# print("Kumulatiiviset summat:")
+# print(cumulative_sums)
+
 # Käynnistetään KMeans 6 keskipisteellä ja toistetaan 10 kertaa
-centers, assignments = kmeans(data, 6, 10)
+centers, klusterisijoitukset = kmeans(data, 6, 10)
 visualisointi(data, centers)
-visualisointi2(data, centers, assignments)
+visualisointi2(data, centers, klusterisijoitukset)
 
 
 # Vaihe 9: Tulostetaan lopulliset keskipisteet
 print("Lopulliset keskipisteet:")
 for center in centers:
     print(center)
+    
+# Tallennetaan treenatut keskipisteet C-kielen taulukkomuotoon
+def tallenna_c_taulukkoon(centers, tiedosto_nimi):
+    with open(tiedosto_nimi, 'w') as tiedosto:
+        tiedosto.write('float centers[{}][3] = {{\n'.format(len(centers)))
+        for center in centers:
+            tiedosto.write('    {{{:.6f}, {:.6f}, {:.6f}}},\n'.format(center[0], center[1], center[2]))
+        tiedosto.write('};\n')
 
-# Tallennetaan keskipisteet tiedostoon (esimerkki)
-np.savetxt('kmeans_centers.txt', centers)
+# Kutsu funktiota tallentamaan keskipisteet
+tallenna_c_taulukkoon(centers, 'kmeans_centers.h')
+
