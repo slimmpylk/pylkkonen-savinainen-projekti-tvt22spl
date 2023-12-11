@@ -29,7 +29,7 @@
 #define USER_BUTTON_3           DK_BTN3_MSK
 #define USER_BUTTON_4           DK_BTN4_MSK
 
-#define DEBUG 1  // 0 = changes direction when button 3 is pressed
+#define DEBUG 0  // 0 = changes direction when button 3 is pressed
                  // 1 = fake 100 measurements done to each 6 directions when 3 pressed.
 static int direction = -1;	// 0 = x direction high
 							// 1 = x directon low	
@@ -131,7 +131,7 @@ void main(void)
 
 	while (1) 
 	{
-		struct Measurement m = readADCValue();
+		// struct Measurement m = readADCValue();
 		// printk("x = %d,  y = %d,  z = %d\n",m.x,m.y,m.z);
 		
 		k_sleep(K_MSEC(200));
