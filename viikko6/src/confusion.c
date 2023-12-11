@@ -17,22 +17,22 @@
   actual measurements are taken from ADC when accelerator is connected.
 */ 
 
-int CP[6][3]={
-	                     {1,0,0},
-						 {2,0,0},
-						 {0,1,0},
-						 {0,2,0},
-						 {0,0,1},
-						 {0,0,2}
+float CP[6][3] = {
+    {1320.444444, 1630.296296, 1629.148148},
+    {1969.857143, 1602.607143, 1620.428571},
+    {1623.035714, 1282.500000, 1609.678571},
+    {1664.851852, 1948.481481, 1642.592593},
+    {1640.785714, 1633.642857, 1312.321429},
+    {1644.892857, 1620.178571, 1956.250000}
 };
 
-int measurements[6][3]={
-	                     {1,0,0},
-						 {2,0,0},
-						 {0,1,0},
-						 {0,2,0},
-						 {0,0,1},
-						 {0,0,2}
+float measurements[6][3] = {
+    {1320.444444, 1630.296296, 1629.148148},
+    {1969.857143, 1602.607143, 1620.428571},
+    {1623.035714, 1282.500000, 1609.678571},
+    {1664.851852, 1948.481481, 1642.592593},
+    {1640.785714, 1633.642857, 1312.321429},
+    {1644.892857, 1620.178571, 1956.250000}
 };
 
 int CM[6][6]= {0};
@@ -49,38 +49,42 @@ void printConfusionMatrix(void)
 	}
 }
 
-void makeHundredFakeClassifications(void)
-{
-   /*******************************************
-   Jos ja toivottavasti kun teet toteutuksen paloissa eli varmistat ensin,
-   että etäisyyden laskenta 6 keskipisteeseen toimii ja osaat valita 6 etäisyydestä
-   voittajaksi sen lyhyimmän etäisyyden, niin silloin voit käyttää tätä aliohjelmaa
-   varmistaaksesi, että etäisuuden laskenta ja luokittelu toimii varmasti tunnetulla
-   itse keksimälläsi sensoridatalla ja itse keksimilläsi keskipisteillä.
-   *******************************************/
-   printk("Make your own implementation for this function if you need this\n");
+// Euclidean distance calculation
+static int calculateDistance(int x1, int y1, int z1, int x2, int y2, int z2) {
+    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2) + pow(z2 - z1, 2));
 }
 
-void makeOneClassificationAndUpdateConfusionMatrix(int direction)
-{
-   /**************************************
-   Tee toteutus tälle ja voit tietysti muuttaa tämän aliohjelman sellaiseksi,
-   että se tekee esim 100 kpl mittauksia tai sitten niin, että tätä funktiota
-   kutsutaan 100 kertaa yhden mittauksen ja sen luokittelun tekemiseksi.
-   **************************************/
-   printk("Make your own implementation for this function if you need this\n");
+int calculateDistanceToAllCentrePointsAndSelectWinner(int x, int y, int z) {
+    int minDistance = INT_MAX;
+    int winner = -1;
+
+    for (int i = 0; i < 6; i++) {
+        int dist = calculateDistance(x, y, z, CP[i][0], CP[i][1], CP[i][2]);
+        if (dist < minDistance) {
+            minDistance = dist;
+            winner = i;
+        }
+    }
+
+    return winner;
 }
 
-int calculateDistanceToAllCentrePointsAndSelectWinner(int x,int y,int z)
-{
-   /***************************************
-   Tämän aliohjelma ottaa yhden kiihtyvyysanturin mittauksen x,y,z,
-   laskee etäisyyden kaikkiin 6 K-means keskipisteisiin ja valitsee
-   sen keskipisteen, jonka etäisyys mittaustulokseen on lyhyin.
-   ***************************************/
-   
-   printk("Make your own implementation for this function if you need this\n");
-   return 0;
+void makeOneClassificationAndUpdateConfusionMatrix(int measurementIndex) {
+    int x = measurements[measurementIndex][0];
+    int y = measurements[measurementIndex][1];
+    int z = measurements[measurementIndex][2];
+
+    int winner = calculateDistanceToAllCentrePointsAndSelectWinner(x, y, z);
+    if (winner >= 0) {
+        CM[measurementIndex][winner]++;
+    }
+}
+
+void makeHundredFakeClassifications() {
+    for (int i = 0; i < 100; i++) {
+        int randomIndex = rand() % 6; // Assuming 6 is the number of measurements
+        makeOneClassificationAndUpdateConfusionMatrix(randomIndex);
+    }
 }
 
 void resetConfusionMatrix(void)
