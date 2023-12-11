@@ -131,8 +131,8 @@ void main(void)
 
 	while (1) 
 	{
-		struct Measurement m = readADCValue();
-		printk("x = %d,  y = %d,  z = %d\n",m.x,m.y,m.z);
+		//struct Measurement m = readADCValue();
+		//printk("x = %d,  y = %d,  z = %d\n",m.x,m.y,m.z);
 		
 		k_sleep(K_MSEC(1000));
 		
