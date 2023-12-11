@@ -61,11 +61,6 @@ static void button_changed(uint32_t button_state, uint32_t has_changed)
 	if ((has_changed & USER_BUTTON_3) && (button_state & USER_BUTTON_3)) 
 	{
 		printk("Button 3 down, making fake 100 meas or one real meas depending on DEBUG state\n");
-		#if DEBUG
-		direction = 0;
-		makeHundredFakeClassifications();
-		printConfusionMatrix();
-		#else
         direction = (direction +1)%6;
 		switch (direction)
 		{
