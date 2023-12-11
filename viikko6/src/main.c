@@ -29,7 +29,7 @@
 #define USER_BUTTON_3           DK_BTN3_MSK
 #define USER_BUTTON_4           DK_BTN4_MSK
 
-#define DEBUG 0  // 0 = changes direction when button 3 is pressed
+#define DEBUG 1  // 0 = changes direction when button 3 is pressed
                  // 1 = fake 100 measurements done to each 6 directions when 3 pressed.
 static int direction = -1;	// 0 = x direction high
 							// 1 = x directon low	
@@ -61,6 +61,11 @@ static void button_changed(uint32_t button_state, uint32_t has_changed)
 	if ((has_changed & USER_BUTTON_3) && (button_state & USER_BUTTON_3)) 
 	{
 		printk("Button 3 down, making fake 100 meas or one real meas depending on DEBUG state\n");
+		#if DEBUG
+		direction = 0;
+		makeHundredFakeClassifications();
+		printConfusionMatrix();
+		#else
         direction = (direction +1)%6;
 		switch (direction)
 		{
@@ -90,6 +95,7 @@ static void button_changed(uint32_t button_state, uint32_t has_changed)
 
 		struct Measurement m = readADCValue();
 		printk("x = %d,  y = %d,  z = %d\n",m.x,m.y,m.z);
+		#endif
 	}		
 
 	if ((has_changed & USER_BUTTON_4) && (button_state & USER_BUTTON_4)) 
@@ -125,10 +131,10 @@ void main(void)
 
 	while (1) 
 	{
-		// struct Measurement m = readADCValue();
+		struct Measurement m = readADCValue();
 		// printk("x = %d,  y = %d,  z = %d\n",m.x,m.y,m.z);
-		printk("Laite päällä.")
-		// k_sleep(K_MSEC(200));
+		
+		k_sleep(K_MSEC(200));
 		
 		// dk_set_led_on(USER_LED1);
 		// dk_set_led_on(USER_LED2);
