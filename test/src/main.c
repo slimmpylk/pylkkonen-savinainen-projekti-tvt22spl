@@ -5,6 +5,7 @@
  */
 #include <zephyr/logging/log.h>
 #include <dk_buttons_and_leds.h>
+#include <zephyr/settings/settings.h>
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -14,8 +15,17 @@
 #include "adc.h"
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
+#include <zephyr/bluetooth/bluetooth.h>
+#include <zephyr/bluetooth/hci.h>
+#include <zephyr/bluetooth/conn.h>
+#include <zephyr/bluetooth/uuid.h>
+#include <zephyr/bluetooth/gatt.h>
+
+#include <bluetooth/services/lbs.h>
 
 
+#define DEVICE_NAME CONFIG_BT_DEVICE_NAME
+#define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1)
 
 #define USER_LED1         	 	DK_LED1
 #define USER_LED2          		DK_LED2
@@ -77,6 +87,13 @@ void main(void)
 	return;
 	}
 
+	printk("Starting Bluetooth Peripheral LBS example\n");
+	printk("Starting Bluetooth Peripheral LBS example\n");
+	printk("Starting Bluetooth Peripheral LBS example\n");
+	printk("Starting Bluetooth Peripheral LBS example\n");
+	printk("Starting Bluetooth Peripheral LBS example\n");
+	printk("Starting Bluetooth Peripheral LBS example\n");
+
 	while (1) 
 	{
 		struct Measurement m = readADCValue();
@@ -99,5 +116,3 @@ void main(void)
 
 	}
 }
-
-

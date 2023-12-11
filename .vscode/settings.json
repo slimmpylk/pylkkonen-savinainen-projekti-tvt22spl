@@ -1,0 +1,11 @@
+{
+    "nrf-connect.applications": [
+        "${workspaceFolder}\\test",
+        "${workspaceFolder}\\bluetooth_test",
+        "${workspaceFolder}\\bluetooth_gatt"
+    ],
+    "nrf-connect.topdir": "${nrf-connect.sdk:2.5.0}",
+    "files.associations": {
+        "compare": "c"
+    }
+}
