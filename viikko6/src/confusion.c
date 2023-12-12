@@ -3,21 +3,7 @@
 #include "confusion.h"
 #include "adc.h"
 
-/* 
-  K-means algorithm should provide 6 center points with
-  3 values x,y,z. Let's test measurement system with known
-  center points. I.e. x,y,z are supposed to have only values
-  1 = down and 2 = up
-  
-  CP matrix is thus the 6 center points got from K-means algoritm
-  teaching process. This should actually come from include file like
-  #include "KmeansCenterPoints.h"
-  
-  And measurements matrix is just fake matrix for testing purpose
-  actual measurements are taken from ADC when accelerator is connected.
-*/ 
-
-float CP[6][3] = {
+int CP[6][3] = {
     {1320.444444, 1630.296296, 1629.148148},
     {1969.857143, 1602.607143, 1620.428571},
     {1623.035714, 1282.500000, 1609.678571},
@@ -26,7 +12,7 @@ float CP[6][3] = {
     {1644.892857, 1620.178571, 1956.250000}
 };
 
-float measurements[6][3] = {
+int measurements[6][3] = {
     {1320.444444, 1630.296296, 1629.148148},
     {1969.857143, 1602.607143, 1620.428571},
     {1623.035714, 1282.500000, 1609.678571},
@@ -35,29 +21,23 @@ float measurements[6][3] = {
     {1644.892857, 1620.178571, 1956.250000}
 };
 
-int CM[6][6]= {0};
+int CM[6][6] = {0};
 
-
-
-void printConfusionMatrix(void)
-{
-	printk("Confusion matrix = \n");
-	printk("   cp1 cp2 cp3 cp4 cp5 cp6\n");
-	for(int i = 0;i<6;i++)
-	{
-		printk("cp%d %d   %d   %d   %d   %d   %d\n",i+1,CM[i][0],CM[i][1],CM[i][2],CM[i][3],CM[i][4],CM[i][5]);
-	}
+void printConfusionMatrix(void) {
+    printk("Confusion matrix = \n");
+    printk("   cp1 cp2 cp3 cp4 cp5 cp6\n");
+    for (int i = 0; i < 6; i++) {
+        printk("cp%d %d   %d   %d   %d   %d   %d\n", i+1, CM[i][0], CM[i][1], CM[i][2], CM[i][3], CM[i][4], CM[i][5]);
+    }
 }
 
-// Euclidean distance calculation
-static int calculateDistance(int x1, int y1, int z1, int x2, int y2, int z2) {
-    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2) + pow(z2 - z1, 2));
+int calculateDistance(int x1, int y1, int z1, int x2, int y2, int z2) {
+    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2) + pow(z2 - z1, 2)); // sama ku python mutta ceesä
 }
 
 int calculateDistanceToAllCentrePointsAndSelectWinner(int x, int y, int z) {
     int minDistance = INT_MAX;
     int winner = -1;
-
     for (int i = 0; i < 6; i++) {
         int dist = calculateDistance(x, y, z, CP[i][0], CP[i][1], CP[i][2]);
         if (dist < minDistance) {
@@ -65,36 +45,38 @@ int calculateDistanceToAllCentrePointsAndSelectWinner(int x, int y, int z) {
             winner = i;
         }
     }
-
     return winner;
 }
 
-void makeOneClassificationAndUpdateConfusionMatrix(int measurementIndex) {
-    int x = measurements[measurementIndex][0];
-    int y = measurements[measurementIndex][1];
-    int z = measurements[measurementIndex][2];
+void makeOneClassificationAndUpdateConfusionMatrix(int direction) {
+
+
+     for (int i = 0; i < 100; i++) {
+    struct Measurement m = readADCValue(); // mittqaukset
+    int x = m.x;
+    int y = m.y;
+    int z = m.z;
+    
 
     int winner = calculateDistanceToAllCentrePointsAndSelectWinner(x, y, z);
     if (winner >= 0) {
-        CM[measurementIndex][winner]++;
+        CM[direction][winner]++;
     }
+     }
 }
 
-void makeHundredFakeClassifications() {
+
+void makeHundredFakeClassifications(void) {
     for (int i = 0; i < 100; i++) {
-        int randomIndex = rand() % 6; // Assuming 6 is the number of measurements
+        int randomIndex = rand() % 6;
         makeOneClassificationAndUpdateConfusionMatrix(randomIndex);
     }
 }
 
-void resetConfusionMatrix(void)
-{
-	for(int i=0;i<6;i++)
-	{ 
-		for(int j = 0;j<6;j++)
-		{
-			CM[i][j]=0;
-		}
-	}
+void resetConfusionMatrix(void) {
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 6; j++) {
+            CM[i][j] = 0;
+        }
+    }
 }
-
