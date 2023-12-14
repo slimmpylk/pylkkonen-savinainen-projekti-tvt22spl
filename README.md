@@ -2,13 +2,14 @@
 # K-Means Koneoppimisprojekti NRF5340:lla
 
 ## Yleiskatsaus
-Tämä projekti käsittelee K-means-algoritmin toteuttamista koneoppimiseen NRF5340-alustalla käyttäen C- ja Python-kieliä.
+Tämä projekti keskittyy K-means-algoritmin toteuttamiseen koneoppimisen alalla käyttäen NRF5340-alustaa. Projekti yhdistää C- ja Python-ohjelmointikielet, jotka ovat molemmat tärkeitä nykyaikaisessa ohjelmistokehityksessä. NRF5340-alusta tarjoaa vankan perustan edistyneille koneoppimissovelluksille, mahdollistaen tehokkaan datan käsittelyn ja analysoinnin.
 
 ## Projektin Kuvaus
-Projektissa toteutetaan K-means-algoritmi nrf5340dk-alustalle. Tämä sisältää kiihtyvyysanturin x, y, z -kiihtyvyysarvojen mittaamisen ja näiden 3D-pisteiden etäisyyden laskemisen kuuteen aiemmin Pythonilla opetettuun keskipisteeseen.
+Projektin keskeinen tehtävä on K-means-algoritmin implementointi nrf5340dk-alustalle. Tämä sisältää kiihtyvyysanturin x, y, z -kiihtyvyysarvojen mittaamisen ja näiden 3D-pisteiden etäisyyden laskemisen kuuteen Pythonilla aiemmin opetettuun keskipisteeseen. Tämän toimenpiteen kautta pystytään tehokkaasti analysoimaan ja luokittelemaan dataa eri ryhmiin.
 
 ## Odotettu Lopputulos
-Tuloksena saat confusion-matriisin, joka osoittaa K-means-luokittelualgoritmin tehokkuuden.
+Projektin päätavoitteena on tuottaa confusion-matriisi, joka osoittaa K-means-luokittelualgoritmin tehokkuuden. Confusion-matriisi auttaa ymmärtämään algoritmin suorituskykyä ja sen kykyä erottaa dataa eri luokkiin. Tämä on keskeinen osa koneoppimisen algoritmien arviointia ja kehitystä.
+
 ![Confusion Matrix](https://github.com/slimmpylk/pylkkonen-savinainen-projekti-tvt22spl/assets/101732015/b6ab84ca-a019-4d91-9ed7-b1676408d46d)
 
 ![Arkkitehtuurikaavio](https://github.com/slimmpylk/pylkkonen-savinainen-projekti-tvt22spl/blob/main/Arkkitehtuurikaavio.jpg)
