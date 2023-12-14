@@ -13,4 +13,4 @@ Tuloksena saat confusion-matriisin, joka osoittaa K-means-luokittelualgoritmin t
 
 ![Arkkitehtuurikaavio](https://github.com/slimmpylk/pylkkonen-savinainen-projekti-tvt22spl/blob/main/Arkkitehtuurikaavio.jpg)
 
-![GIF](https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/76cbe9cc-b23e-45b5-9dc3-9f8b42ff52aa/dexv4yf-16378117-7b36-4343-8975-af339b7475fc.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzc2Y2JlOWNjLWIyM2UtNDViNS05ZGMzLTlmOGI0MmZmNTJhYVwvZGV4djR5Zi0xNjM3ODExNy03YjM2LTQzNDMtODk3NS1hZjMzOWI3NDc1ZmMuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.-IZ6RC8JNXGdAeOQJski_dHeRovN8BIhSOEALAxxGZ8)
+![GIF](https://gifdb.com/images/high/dancing-jesus-waving-spotlight-the-simpsons-1okkznmi9mngjg8f.gif)
