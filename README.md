@@ -10,6 +10,8 @@ Projektin keskeinen tehtävä on K-means-algoritmin implementointi nrf5340dk-alu
 ## Odotettu Lopputulos
 Projektin päätavoitteena on tuottaa confusion-matriisi, joka osoittaa K-means-luokittelualgoritmin tehokkuuden. Confusion-matriisi auttaa ymmärtämään algoritmin suorituskykyä ja sen kykyä erottaa dataa eri luokkiin. Tämä on keskeinen osa koneoppimisen algoritmien arviointia ja kehitystä.
 
+
+
 ![Confusion Matrix](https://github.com/slimmpylk/pylkkonen-savinainen-projekti-tvt22spl/assets/101732015/b6ab84ca-a019-4d91-9ed7-b1676408d46d)
 
 ![Arkkitehtuurikaavio](https://github.com/slimmpylk/pylkkonen-savinainen-projekti-tvt22spl/blob/main/Arkkitehtuurikaavio.jpg)
