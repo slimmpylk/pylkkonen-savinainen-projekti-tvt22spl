@@ -1,5 +1,8 @@
 # pylkkonen-savinainen-projekti-tvt22spl
-# K-Means Koneoppimisprojekti NRF5340:lla
+# Koneoppimisprojekti NRF5340:lla
+
+# Neuroverkon tulokset confusion matrixiin printattuna Viikko 6 lisätehtävä
+<img width="444" alt="image" src="https://github.com/slimmpylk/pylkkonen-savinainen-projekti-tvt22spl/assets/101732015/2406e725-02ff-4e4e-9537-8c01bb2969a6">
 
 ## Yleiskatsaus
 Tämä projekti keskittyy K-means-algoritmin toteuttamiseen koneoppimisen alalla käyttäen NRF5340-alustaa. Projekti yhdistää C- ja Python-ohjelmointikielet, jotka ovat molemmat tärkeitä nykyaikaisessa ohjelmistokehityksessä. NRF5340-alusta tarjoaa vankan perustan edistyneille koneoppimissovelluksille, mahdollistaen tehokkaan datan käsittelyn ja analysoinnin.
